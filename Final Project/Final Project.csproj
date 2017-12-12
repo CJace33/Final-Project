@@ -87,8 +87,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\CreateGrid.cs" />
-    <Compile Include="Assets\NodeScript.cs" />
+    <Compile Include="Assets\Scripts\BehaviourTree.cs" />
+    <Compile Include="Assets\Scripts\CreateGrid.cs" />
+    <Compile Include="Assets\Scripts\NodeScript.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
   </ItemGroup>
   <ItemGroup>

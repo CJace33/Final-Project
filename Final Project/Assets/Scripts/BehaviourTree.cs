@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NodeScript : MonoBehaviour {
-
-    public int NodeX;
-    public int NodeY;
 
 
+
+
+public class BehaviourTree : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -19,3 +18,13 @@ public class NodeScript : MonoBehaviour {
 		
 	}
 }
+
+enum CompletionStates
+{
+    Success,
+    Failure,
+    Error
+}
+
+
+
