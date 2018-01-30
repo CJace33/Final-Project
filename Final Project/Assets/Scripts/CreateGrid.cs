@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class CreateGrid : MonoBehaviour
 {
     public GameObject GridNode;//Node to be instantiated
@@ -13,21 +12,18 @@ public class CreateGrid : MonoBehaviour
     public bool Reinstantiate;
 	void Awake ()
     {
-        if (Reinstantiate)
+        for (int x = -GridSizeX; x < GridSizeX; x++)
         {
-            for (int x = -GridSizeX; x < GridSizeX; x++)
+            for (int y = -GridSizeY; y < GridSizeY; y++)
             {
-                for (int y = -GridSizeY; y < GridSizeY; y++)
-                {
-                    //instantiate the node
-                    GameObject Node = Instantiate(GridNode, new Vector3(GridSpacing * x, GridSpacing * y, 0), Quaternion.identity);
-                    //Access the NodeScript attached to the new prefab and set its X and Y
-                    Node.GetComponent<NodeScript>().NodeX = x;
-                    Node.GetComponent<NodeScript>().NodeY = y;
+                //instantiate the node
+                GameObject Node = Instantiate(GridNode, new Vector3(GridSpacing * x, GridSpacing * y, 0), Quaternion.identity);
+                //Access the NodeScript attached to the new prefab and set its X and Y
+                Node.GetComponent<NodeScript>().nodeX = x;
+                Node.GetComponent<NodeScript>().nodeY = y;
 
-                    //Sets the GameObject this 
-                    Node.transform.SetParent(this.transform);
-                }
+                //Sets the GameObject this 
+                Node.transform.SetParent(this.transform);
             }
         }
     }
