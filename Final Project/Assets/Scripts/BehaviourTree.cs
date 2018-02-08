@@ -32,11 +32,40 @@ public enum CompletionStates
 //Root class object of the tree
 public class BTRoot
 {
-
-    public CompletionStates Tick()
+    private CompletionStates status;
+    
+    //First thing the child runs when it is created, will be overrided for each child
+    public virtual void OnInitialise() { }
+    //Last thing the child runs when it is destroyed, will be overrided for each child
+    public virtual void OnExit(CompletionStates state) { }
+    //Function to update the guard, will be overridden
+    public virtual CompletionStates UpdateGuard(GuardController guard)
     {
-        return CompletionStates.ERROR;
+        //Will only return this if not overridden
+        return CompletionStates.ERROR;        
     }
+
+    //Run each behaviour tree tick
+    public CompletionStates Tick(GuardController guard)
+    {
+        //If the guard isn't still running, run his starting function
+        if (status != CompletionStates.RUNNING)
+        {
+            OnInitialise();
+        }
+        //Update the guard
+        status = UpdateGuard(guard);
+
+        //If the guard is no longer running, call its exit function
+        if (status != CompletionStates.RUNNING)
+        {
+            OnExit(status);
+        }
+        return status;
+    }
+
+    //Returns the current status
+    public CompletionStates currentStatus() { return status; }
 
 }
 
@@ -48,7 +77,8 @@ public class BTRoot
 //returning the value that is passed down to them from the child they are running
 public class Composite : BTRoot
 {
-    
+    //Create a new list to store the Composite's children
+    protected List<BTRoot> children = new List<BTRoot>();
 }
 
 //Selectors attempt to tick its children sequentually until one of them returns.
@@ -56,14 +86,43 @@ public class Composite : BTRoot
 //If all of its children return Failure, the node will return FAILURE
 public class Selector : Composite
 {
+    //Override the default UpdateGuard
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //Loop through the children list
+        foreach (BTRoot child in children)
+        {
+            //If the child does not fail its Tick function
+            if (child.Tick(guard) != CompletionStates.FAILURE)
+            {
+                //return the child's status if it did not fail
+                return child.currentStatus();
+            }
+        }
 
+        //If all of its children return failure, then the node will also return failure
+        return CompletionStates.FAILURE;
+    }
 }
 
 //The Sequence node ticks each of its children sequentially until one of them returns FAILURE, RUNNING or ERROR,
 //if all children return SUCCESS, the Sequence also returns SUCCESS
 public class Sequence : Composite
 {
-
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //Loop through the children list
+        foreach (BTRoot child in children)
+        {
+            //If the child does not Succeed its Tick function
+            if (child.Tick(guard) != CompletionStates.SUCCESS)
+            {
+                //Return the child's status if it succeeded
+                return child.currentStatus();
+            }
+        }
+        return CompletionStates.SUCCESS;
+    }
 }
 
 //The Parallel node ticks all of its children at once, allowing them to work in parallel.
