@@ -21,6 +21,7 @@ public class CreateGrid : MonoBehaviour
                 //Access the NodeScript attached to the new prefab and set its X and Y
                 Node.GetComponent<NodeScript>().nodeX = x;
                 Node.GetComponent<NodeScript>().nodeY = y;
+                Node.GetComponent<NodeScript>().tiletype = NodeScript.TileType.Ground;
 
                 //Sets the GameObject this 
                 Node.transform.SetParent(this.transform);
