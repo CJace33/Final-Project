@@ -5,10 +5,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     public float PlayerSpeed;
-    public Vector3 MoveDirection = Vector3.zero;
-
-    
-
 
 	// Use this for initialization
 	void Start () {

@@ -134,7 +134,31 @@ public class Parallel : Composite
 
 }
 
- 
+//======================================================
+//                  Decorators
+//======================================================
+
+//Decorators are nodes that have a single child 
+//They add additional abilities to the leaves/composites
+//they are attached to.
+
+//Like Leaves, Decorators are very situational,
+//coded to specific tasks.
+//This means that the only 
+public class BaseDecorator : BTRoot
+{
+    protected BTRoot child;
+}
+
+public class RepeatDecorator : BaseDecorator
+{
+
+}
+
+
+
+
+
 
 //======================================================
 //                  Leaves
