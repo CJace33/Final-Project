@@ -142,21 +142,58 @@ public class Parallel : Composite
 //They add additional abilities to the leaves/composites
 //they are attached to.
 
-//Like Leaves, Decorators are very situational,
-//coded to specific tasks.
-//This means that the only 
+//Like Leaves, Decorators are very situational, coded to specific tasks.
 public class BaseDecorator : BTRoot
 {
     protected BTRoot child;
 }
 
+
 public class RepeatDecorator : BaseDecorator
 {
+    //Number of times this decorator repeats its child
+    protected int numRepeat;
 
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //For the specified number of times, tick the child of this Decorator
+        //Note, the normal "i++" has been switched to "++i"
+        for (int i = 0; i < numRepeat; ++i)
+        {
+            child.Tick(guard);
+            if (i == numRepeat)
+            {
+                return CompletionStates.SUCCESS;
+            }
+        }
+        //If it hasn't returned success yet, return ERROR
+        return CompletionStates.ERROR;
+    }
 }
 
+//Decorator that always returns success
+public class SucceederRepeater : BaseDecorator
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //Run the Tick function on the child, 
+        child.Tick(guard);
+        //Regardless of if the child succeeded or failed, return success
+        return CompletionStates.SUCCESS;
+    }
+}
 
-
+//Decorator that always returns failure
+public class FailureRepeater : BaseDecorator
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //Run the Tick function on the child, 
+        child.Tick(guard);
+        //Regardless of if the child succeeded or failed, return success
+        return CompletionStates.FAILURE;
+    }
+}
 
 
 
