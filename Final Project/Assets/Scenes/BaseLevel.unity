@@ -137,14 +137,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 147612201}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a36bd59679ccce47ab7e32e8b3980c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 68755ed10900853448016052bf550a91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridNode: {fileID: 1457660917222128, guid: dbbd148c8702f8e4f9d692061859c8a9, type: 2}
-  GridSizeX: 0
-  GridSizeY: 0
-  GridSpacing: 0
-  Reinstantiate: 1
+  nodeRow: []
 --- !u!4 &147612203
 Transform:
   m_ObjectHideFlags: 0
@@ -227,7 +223,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4863185513203564, guid: 87a11b573ad55ca4e85109eac9a1205c, type: 2}
       propertyPath: m_LocalPosition.y
-      value: -0.57
+      value: 0.47
       objectReference: {fileID: 0}
     - target: {fileID: 4863185513203564, guid: 87a11b573ad55ca4e85109eac9a1205c, type: 2}
       propertyPath: m_LocalPosition.z
@@ -265,6 +261,11 @@ Prefab:
     - target: {fileID: 4863185513203564, guid: 87a11b573ad55ca4e85109eac9a1205c, type: 2}
       propertyPath: m_LocalScale.x
       value: 0.9035163
+      objectReference: {fileID: 0}
+    - target: {fileID: 212604069715762616, guid: 87a11b573ad55ca4e85109eac9a1205c,
+        type: 2}
+      propertyPath: m_SortingLayer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 87a11b573ad55ca4e85109eac9a1205c, type: 2}

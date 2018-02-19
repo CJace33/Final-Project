@@ -54,11 +54,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nodeX: 0
   nodeY: 0
-  passable: 0
-  tiletype: 0
-  sprites:
-  - {fileID: 21300022, guid: a3565e7c79a5d3f4485b4991cf2a5aaf, type: 3}
-  - {fileID: 21300000, guid: a3565e7c79a5d3f4485b4991cf2a5aaf, type: 3}
+  heuristic: 0
 --- !u!212 &212924973760695408
 SpriteRenderer:
   m_ObjectHideFlags: 1
