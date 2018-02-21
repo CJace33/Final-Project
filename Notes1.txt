@@ -1,0 +1,8 @@
+Work out what you can cut out
+Use Unity's navmesh to create pathfinding instead of doing A*
+Switch to 3D to get the navmesh to work, logic is the main focus
+
+
+
+
+
