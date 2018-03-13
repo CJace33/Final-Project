@@ -11,13 +11,13 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: 
+  - name: Patrol
     cost: 1
-  - name: 
+  - name: Lookout
     cost: 1
-  - name: 
+  - name: Idle
     cost: 1
-  - name: 
+  - name: Home
     cost: 1
   - name: 
     cost: 1

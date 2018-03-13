@@ -226,6 +226,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Desert Environment\Example\AutoMoveAndRotate.cs" />
+    <Compile Include="Assets\Scripts\BehaviourTree.cs" />
+    <Compile Include="Assets\Scripts\Blackboard.cs" />
+    <Compile Include="Assets\Scripts\GuardController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Desert Environment\Models\Shaders\WindShader.shader" />
