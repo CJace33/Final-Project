@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Final Project 3D", "Final P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Final Project 3D.Editor.Plugins", "Final Project 3D.Editor.Plugins.csproj", "{C6CB3F91-E919-AC19-9020-738B2CCB1613}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Final Project 3D.Editor", "Final Project 3D.Editor.csproj", "{F14493DF-8AF8-D6BE-190D-C7F1C0DE367B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{C6CB3F91-E919-AC19-9020-738B2CCB1613}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6CB3F91-E919-AC19-9020-738B2CCB1613}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6CB3F91-E919-AC19-9020-738B2CCB1613}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F14493DF-8AF8-D6BE-190D-C7F1C0DE367B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F14493DF-8AF8-D6BE-190D-C7F1C0DE367B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14493DF-8AF8-D6BE-190D-C7F1C0DE367B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F14493DF-8AF8-D6BE-190D-C7F1C0DE367B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

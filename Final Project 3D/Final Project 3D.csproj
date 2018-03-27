@@ -229,6 +229,8 @@
     <Compile Include="Assets\Scripts\BehaviourTree.cs" />
     <Compile Include="Assets\Scripts\Blackboard.cs" />
     <Compile Include="Assets\Scripts\GuardController.cs" />
+    <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Viewcone.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Desert Environment\Models\Shaders\WindShader.shader" />

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Blackboard : MonoBehaviour {
 
+    public Transform playerLastSeen;
+    public GameObject playerPos;
+
 	// Use this for initialization
 	void Start () {
 		
