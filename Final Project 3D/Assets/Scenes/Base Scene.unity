@@ -2491,7 +2491,11 @@ MonoBehaviour:
   blackBoardObj: {fileID: 1974071722}
   viewRadius: 12.48
   viewAngle: 78
-  weaponRange: 0
+  meleeWeaponRange: 0
+  gunWeaponRange: 0
+  meleeWeapon: 0
+  attackCooldown: 0
+  weaponDamage: 0
   targetMask:
     serializedVersion: 2
     m_Bits: 256
@@ -2952,7 +2956,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1312853092}
   m_LocalRotation: {x: -0, y: -0.9648534, z: -0, w: 0.26278868}
-  m_LocalPosition: {x: -2.07, y: 4.23, z: 2.77}
+  m_LocalPosition: {x: -1.26, y: 0.74, z: 5.77}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -4341,6 +4345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerLastSeen: {fileID: 0}
+  playerPos: {fileID: 0}
 --- !u!4 &2013336795 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4000013421957810, guid: d11d124d82b05eb428570308b0c2d5be,

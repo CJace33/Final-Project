@@ -6,6 +6,7 @@ public class Blackboard : MonoBehaviour {
 
     public Transform playerLastSeen;
     public GameObject playerPos;
+    public int alertnessCounter;
 
 	// Use this for initialization
 	void Start () {

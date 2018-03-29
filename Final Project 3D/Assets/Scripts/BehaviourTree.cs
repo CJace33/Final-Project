@@ -199,6 +199,26 @@ public class FailureRepeater : BaseDecorator
     }
 }
 
+    //Flipper
+//Decorator that flips the result of a success or failure, leaving running or error alone
+public class FlipperRepeater : BaseDecorator
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //Run the child first
+        CompletionStates returnState = child.Tick(guard);
+        //Check if the child was a success, and if so flip it to a failure
+        if (returnState == CompletionStates.SUCCESS)
+            return CompletionStates.FAILURE;
+        //Check if the child was a failure, and if so flip it to a success
+        else if (returnState == CompletionStates.FAILURE)
+            return CompletionStates.SUCCESS;
+        //Don't mess with a running or error result
+        else
+            return returnState;
+    }
+}
+
 
 
 //======================================================
@@ -217,8 +237,22 @@ public class BaseLeaf : BTRoot { }
 //Returns Failure if the action fails
 //Returns Running while the action is executing
 
+    //Attack Node
+//Attack Node gets called after checking the range and the attack cooldown
+public class AttackTarget : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        PlayerController player;
+        player = GameObject.FindGameObjectWithTag("Target").GetComponent<PlayerController>();
+        player.ReducePlayerHealth(guard.weaponDamage);
+        return CompletionStates.SUCCESS;
+    }
+}
+
+
     //Base Movement Node
-//I need a base movement node that will then lead to more specific sub-nodes. 
+    //I need a base movement node that will then lead to more specific sub-nodes. 
 public class BaseMovement : BaseLeaf
 {
     public override CompletionStates UpdateGuard(GuardController guard)
@@ -287,6 +321,7 @@ public class PlayerDetected: BaseLeaf
                 {
                     //Target spotted, update the blackboard and return true
                     guard.blackboard.playerLastSeen = target;
+                    guard.blackboard.alertnessCounter = 100;
                     return CompletionStates.SUCCESS;
                 }
 
@@ -369,7 +404,18 @@ public class CheckAttackCooldown : BaseLeaf
     }
 }
 
-
+    //CheckAlertnessCounter
+//Checks if the guard should still be hunting for the player
+public class CheckAlertnessCounter : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        if (guard.blackboard.alertnessCounter <= 0)
+            return CompletionStates.FAILURE;
+        else
+            return CompletionStates.SUCCESS;
+    }
+}
 
 
 

@@ -16,6 +16,7 @@ public class GuardController : MonoBehaviour {
     public float meleeWeaponRange, gunWeaponRange;
     public bool meleeWeapon;
     public float attackCooldown;
+    public int weaponDamage;
 
 
     public LayerMask targetMask;
@@ -30,6 +31,7 @@ public class GuardController : MonoBehaviour {
 
         //Create the nodes and populate the children Lists within them
         tree = new Selector();
+
             //Root of the spotted sub-tree
             Sequence spottedSequence = new Sequence();
             tree.children.Add(spottedSequence);
@@ -39,16 +41,28 @@ public class GuardController : MonoBehaviour {
                 //Add a Succeeder repeater for the melee sub-tree
                 SucceederRepeater succeeder = new SucceederRepeater();
                 spottedSequence.children.Add(succeeder);
-                    //Sequence for the melee sub-tree
-                    Sequence subSequence = new Sequence();
-                    succeeder.child = subSequence;
-                        //Add the melee weapon check to the sequence
-                        MeleeWeapon meleeWeapon = new MeleeWeapon();
-                        subSequence.children.Add(meleeWeapon);
-                        //Add in the persuit movement to 
-                        PersuitMovement persuitMovement = new PersuitMovement();
-                        subSequence.children.Add(persuitMovement);
-                    
+                //Sequence for the melee sub-tree
+                Sequence subSequence = new Sequence();
+                succeeder.child = subSequence;
+                    //Add the melee weapon check to the sequence
+                    MeleeWeapon meleeWeapon = new MeleeWeapon();
+                    subSequence.children.Add(meleeWeapon);
+                    //Add in the persuit movement to 
+                    PersuitMovement persuitMovement = new PersuitMovement();
+                    subSequence.children.Add(persuitMovement);
+                CheckRange checkRange = new CheckRange();
+                spottedSequence.children.Add(checkRange);
+                CheckAttackCooldown checkCooldown = new CheckAttackCooldown();
+                spottedSequence.children.Add(checkCooldown);
+
+            //Root of the Search sub-tree
+            Sequence searchSequence = new Sequence();
+            tree.children.Add(searchSequence);
+                
+
+
+
+
 
 
 
@@ -100,4 +114,8 @@ public class GuardController : MonoBehaviour {
         }
     }
 
+    void ResetWeaponCooldown(int Cooldown)
+    {
+
+    }
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+    protected int playerHealth = 100;
+
+
 	// Use this for initialization
 	void Start () {
 		
@@ -13,4 +16,9 @@ public class PlayerController : MonoBehaviour {
 	void Update () {
 		
 	}
+
+    public void ReducePlayerHealth(int reduction)
+    {
+        playerHealth -= reduction;
+    }
 }
