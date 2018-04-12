@@ -10,14 +10,26 @@ public class GuardController : MonoBehaviour {
 
     protected Selector tree;
 
+    //Primary viewcone variables
     public float viewRadius;
     [Range(0, 360)]
     public float viewAngle;
+
+    //Secondary, touching viewcone variables
+    public float closeViewRadius;
+    [Range(0, 360)]
+    public float closeViewAngle;
+
+
     public float meleeWeaponRange, gunWeaponRange;
     public bool meleeWeapon;
     public float attackCooldown;
     public int weaponDamage;
-
+    public int rateOfFire;
+    public int followingPlayer;
+    public bool curious;
+    //How long the guard will follow the player for
+    public int tenacity;
 
     public LayerMask targetMask;
     public LayerMask obstacleMask;
@@ -54,15 +66,42 @@ public class GuardController : MonoBehaviour {
                 spottedSequence.children.Add(checkRange);
                 CheckAttackCooldown checkCooldown = new CheckAttackCooldown();
                 spottedSequence.children.Add(checkCooldown);
+                AttackTarget attack = new AttackTarget();
+                spottedSequence.children.Add(attack);
 
             //Root of the Search sub-tree
             Sequence searchSequence = new Sequence();
             tree.children.Add(searchSequence);
-                
-
-
-
-
+                //Flipper
+                FlipperRepeater flipper = new FlipperRepeater();
+                searchSequence.children.Add(flipper);
+                    //PlayerDetected
+                    playerDetected = new PlayerDetected();
+                    flipper.child = playerDetected;
+                flipper = new FlipperRepeater();
+                searchSequence.children.Add(flipper);
+                    //following sequence
+                    Sequence followingSequence = new Sequence();
+                    flipper.child = followingSequence;
+                        CheckFollowing checkFollowing = new CheckFollowing();
+                        followingSequence.children.Add(checkFollowing);
+                        persuitMovement = new PersuitMovement();
+                        followingSequence.children.Add(persuitMovement);
+                        UpdatePlayerPos updatePlayerPos = new UpdatePlayerPos();
+                        followingSequence.children.Add(updatePlayerPos);
+                        FollowCounter followCounter = new FollowCounter();
+                        followingSequence.children.Add(followCounter);
+                        EnableCurious enableCurious = new EnableCurious();
+                        followingSequence.children.Add(enableCurious);
+                //Curious sub-tree
+                Sequence curiousSequence = new Sequence();
+                searchSequence.children.Add(curiousSequence);
+                    CheckCurious checkCurious = new CheckCurious();
+                    curiousSequence.children.Add(checkCurious);
+                    LookAround lookAround = new LookAround();
+                    curiousSequence.children.Add(lookAround);
+                    DisableCurious disableCurious = new DisableCurious();
+                    curiousSequence.children.Add(disableCurious);
 
 
 
@@ -112,10 +151,5 @@ public class GuardController : MonoBehaviour {
 
             }
         }
-    }
-
-    void ResetWeaponCooldown(int Cooldown)
-    {
-
     }
 }

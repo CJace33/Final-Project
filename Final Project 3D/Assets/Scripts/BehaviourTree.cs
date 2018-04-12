@@ -9,7 +9,7 @@ using UnityEngine.AI;
 public class BehaviourTree : MonoBehaviour
 {
 
-    protected BTRoot BTRootObj = new BTRoot();
+    //protected BTRoot BTRootObj = new BTRoot();
 
 
     // Use this for initialization
@@ -39,7 +39,7 @@ public class BTRoot
     private CompletionStates status;
 
     //First thing the child runs when it is created, will be overriden for each child
-    public virtual void OnInitialise() { }
+    public virtual void OnInitialise(GuardController guard) { }
     //Last thing the child runs when it is destroyed, will be overriden for each child
     public virtual void OnExit(CompletionStates state) { }
     //Function to update the guard, will be overridden
@@ -52,10 +52,10 @@ public class BTRoot
     //Run each behaviour tree tick
     public CompletionStates Tick(GuardController guard)
     {
-        //If the guard isn't still running, run his starting function
+        //If the guard isn't still running, run its starting function
         if (status != CompletionStates.RUNNING)
         {
-            OnInitialise();
+            OnInitialise(guard);
         }
         //Update the guard
         status = UpdateGuard(guard);
@@ -121,7 +121,7 @@ public class Sequence : Composite
             //If the child does not Succeed its Tick function
             if (child.Tick(guard) != CompletionStates.SUCCESS)
             {
-                //Return the child's status if it succeeded
+                //Return the child's status
                 return child.currentStatus();
             }
         }
@@ -231,7 +231,7 @@ public class BaseLeaf : BTRoot { }
 
 
 
-//Action Nodes
+        //Action Nodes
 //Action nodes execute an action
 //Returns Success if the action completes successfully,
 //Returns Failure if the action fails
@@ -244,15 +244,16 @@ public class AttackTarget : BaseLeaf
     public override CompletionStates UpdateGuard(GuardController guard)
     {
         PlayerController player;
-        player = GameObject.FindGameObjectWithTag("Target").GetComponent<PlayerController>();
+        player = guard.blackboard.player.GetComponent<PlayerController>();
         player.ReducePlayerHealth(guard.weaponDamage);
+        guard.attackCooldown = guard.rateOfFire;
+        Debug.Log("AttackTarget SUCCESS");
         return CompletionStates.SUCCESS;
     }
 }
 
-
     //Base Movement Node
-    //I need a base movement node that will then lead to more specific sub-nodes. 
+//I need a base movement node that will then lead to more specific sub-nodes. 
 public class BaseMovement : BaseLeaf
 {
     public override CompletionStates UpdateGuard(GuardController guard)
@@ -263,31 +264,141 @@ public class BaseMovement : BaseLeaf
 
         if (GetDestination(guard) != null)
         {
-            navGuard.destination = GetDestination(guard).position;
-            return CompletionStates.SUCCESS;
+            //Check if the guard has reached its destination
+            navGuard.destination = GetDestination(guard);
+            if (!navGuard.pathPending)
+            {
+                if (navGuard.remainingDistance <= navGuard.stoppingDistance)
+                {
+                    if (!navGuard.hasPath || navGuard.velocity.sqrMagnitude == 0f)
+                    {
+                        
+                        Debug.Log("BaseMovement SUCCESS");
+                        return CompletionStates.SUCCESS;
+                    }
+                }
+            }
+            //And if it is still en-route, return running
+            Debug.Log("BaseMovement RUNNING");
+            return CompletionStates.RUNNING;
         }
         else
         {
             Debug.Log("Destination Not Found");
             return CompletionStates.FAILURE;
         }
-
     }
 
     //The base version of this script returns null
-    public virtual Transform GetDestination(GuardController guard)
+    public virtual Vector3 GetDestination(GuardController guard)
     {
-        return null;
+        return Vector3.zero;
     }
 }
 
-//Persuit Movement Node
+    //Persuit Movement Node
 //Provides logic to send the guard chasing after the player
 public class PersuitMovement : BaseMovement
 {
-    public override Transform GetDestination(GuardController guard)
+    public override Vector3 GetDestination(GuardController guard)
     {
         return guard.blackboard.playerLastSeen;
+    }
+}
+
+    //UpdatePlayerPos
+//Updates the player's position, regardless of where they are
+public class UpdatePlayerPos : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        guard.blackboard.playerLastSeen = guard.blackboard.player.transform.position;
+        Debug.Log("UpdatePlayerPos SUCCESS");
+        return CompletionStates.SUCCESS;
+    }
+}
+
+    //FollowCounter
+//Updates the followingPlayer
+public class FollowCounter : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        guard.followingPlayer--;
+        Debug.Log("FollowCounter SUCCESS");
+        return CompletionStates.SUCCESS;
+    }
+}
+
+    //LookAround
+//Swivels to look around him
+public class LookAround : BaseLeaf
+{
+    Vector3 originalFacing;
+    bool turned;
+    float turnSpeed = 2;
+    float turnCurrentAngle;
+    float turnAmount = 45;
+
+    public override void OnInitialise(GuardController guard)
+    {
+        //Store the original facing of the guard and set the turned to false
+        originalFacing = guard.gameObject.transform.rotation.eulerAngles;
+        turnCurrentAngle = 0;
+        turned = false;
+    }
+
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        //First rotate it one way
+        if (turnCurrentAngle <=  turnAmount && !turned)
+        {
+            guard.transform.rotation = Quaternion.Euler(0, originalFacing.y + turnCurrentAngle, 0);
+            turnCurrentAngle += turnSpeed;
+            Debug.Log("LookAround RUNNING");
+            return CompletionStates.RUNNING;
+        }
+        else
+        {
+            turned = true;
+        }
+        //then the other
+        if (turnCurrentAngle >= -turnAmount && turned)
+        {
+            guard.transform.rotation = Quaternion.Euler(0, originalFacing.y + turnCurrentAngle, 0);
+            turnCurrentAngle -= turnSpeed;
+            Debug.Log("LookAround RUNNING");
+            return CompletionStates.RUNNING;
+        }
+        else
+        {
+            Debug.Log("LookAround SUCCESS");
+            return CompletionStates.SUCCESS;
+        }
+    }
+}
+
+    //EnableCurious
+//Enables the Guard's curious bool
+public class EnableCurious : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        guard.curious = true;
+        Debug.Log("EnableCurious SUCCESS");
+        return CompletionStates.SUCCESS;
+    }
+}
+
+    //DisableCurious
+//Enables the Guard's curious bool
+public class DisableCurious : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        guard.curious = false;
+        Debug.Log("DisableCurious SUCCESS");
+        return CompletionStates.SUCCESS;
     }
 }
 
@@ -302,41 +413,70 @@ public class PlayerDetected: BaseLeaf
 {
     public override CompletionStates UpdateGuard(GuardController guard)
     {
-        //Collect an array of all the targets within range, using the targetmask to only collect target objects
-        Collider[] targetsInView = Physics.OverlapSphere(guard.transform.position, guard.viewRadius, guard.targetMask);
+        //Collect a list of all the targets within range, using the targetmask to only collect target objects
+        List <Collider> targetsInView = new List<Collider>();
+        //Add targets from primary viewcone
+        targetsInView.AddRange(Physics.OverlapSphere(guard.transform.position, guard.viewRadius, guard.targetMask));
 
-        //Then check if each of those targets is within the viewcone
-        for (int i = 0; i < targetsInView.Length; i++)
+        //Check to see if the targets generate a hit
+        Vector3 target = ViewConeCheck(guard, targetsInView, guard.viewAngle);
+        //and if they do, 
+        if ( target != Vector3.zero)
+        {
+            //set the target in the blackboard, increase the alertness counter and return SUCCESS
+            guard.blackboard.playerLastSeen = target;
+            guard.followingPlayer = guard.tenacity;
+            Debug.Log("PlayerDetected SUCCESS primary viewcone");
+            return CompletionStates.SUCCESS;
+        }
+        //Now check the secondary viewcone
+        //Clearing the targets first
+        targetsInView.Clear();
+        //Add targets from secondary viewcone
+        targetsInView.AddRange(Physics.OverlapSphere(guard.transform.position, guard.closeViewRadius, guard.targetMask));
+        //Actually check the viewcone
+        target = ViewConeCheck(guard, targetsInView, guard.closeViewAngle);
+                //and if they do, 
+        if (target != Vector3.zero)
+        {
+            //set the target in the blackboard, increase the alertness counter and return SUCCESS
+            guard.blackboard.playerLastSeen = target;
+            guard.followingPlayer = guard.tenacity;
+            Debug.Log("PlayerDetected SUCCESS primary viewcone");
+            return CompletionStates.SUCCESS;
+        }
+        //If the player has not been spotted for some reason, return failure
+        Debug.Log("PlayerDetected FAILURE");
+        return CompletionStates.FAILURE;
+
+    }
+
+    public Vector3 ViewConeCheck(GuardController guard, List<Collider> targets, float angle)
+    {
+        for (int i = 0; i < targets.Count; i++)
         {
             //Set the target
-            Transform target = targetsInView[i].transform;
+            Transform target = targets[i].transform;
             //Get the angle between the current direction the guard is facing and the target we are looking at
             Vector3 dirToTarget = (target.position - guard.transform.position).normalized;
-            //Check if that angle is inside the viewcone
-            if (Vector3.Angle(guard.transform.forward, dirToTarget) < guard.viewAngle / 2)
+            //Check if that angle is inside the viewcone or the closeViewcone
+            if (Vector3.Angle(guard.transform.forward, dirToTarget) < angle / 2)
             {
                 //See if there is an obstacle in between the guard and the player
                 float distanceToTarget = Vector3.Distance(guard.transform.position, target.position);
                 if (!Physics.Raycast(guard.transform.position, dirToTarget, distanceToTarget, guard.obstacleMask))
                 {
                     //Target spotted, update the blackboard and return true
-                    guard.blackboard.playerLastSeen = target;
-                    guard.blackboard.alertnessCounter = 100;
-                    return CompletionStates.SUCCESS;
+                    return target.position;
                 }
 
             }
         }
-
-        //If the player has not been spotted for some reason, return failure
-        return CompletionStates.FAILURE;
-
+        return Vector3.zero;
     }
 }
 
-
-
-    //Condition Melee weapon
+    //Meleeweapon
 //Will return failure if the guard melee weapon bool is not true
 public class MeleeWeapon : BaseLeaf
 {
@@ -344,16 +484,18 @@ public class MeleeWeapon : BaseLeaf
     {
         if (guard.meleeWeapon)
         {
+            Debug.Log("MeleeWeapon SUCCESS");
             return CompletionStates.SUCCESS;
         }
         else
         {
+            Debug.Log("MeleeWeapon FAILURE");
             return CompletionStates.FAILURE;
         }
     }
 }
 
-    //Condition CheckRange
+    //CheckRange
 //Checks if the character is within range, returns success if they are and failure if not
 public class CheckRange : BaseLeaf
 {
@@ -363,31 +505,35 @@ public class CheckRange : BaseLeaf
         if (guard.meleeWeapon)
         {
             //then check if the player is within melee range
-            if (Vector3.Distance(guard.blackboard.playerPos.transform.position, guard.transform.position) < guard.meleeWeaponRange)
+            if (Vector3.Distance(guard.blackboard.player.transform.position, guard.transform.position) < guard.meleeWeaponRange)
             {
+                Debug.Log("CheckRange Melee SUCCESS");
                 return CompletionStates.SUCCESS;
             }
             else
             {
+                Debug.Log("CheckRange Melee FAILURE");
                 return CompletionStates.FAILURE;
             }
         }
         else
         {
             //then check if the player is within gun range
-            if (Vector3.Distance(guard.blackboard.playerPos.transform.position, guard.transform.position) < guard.gunWeaponRange)
+            if (Vector3.Distance(guard.blackboard.player.transform.position, guard.transform.position) < guard.gunWeaponRange)
             {
+                Debug.Log("CheckRange Gun Success");
                 return CompletionStates.SUCCESS;
             }
             else
             {
+                Debug.Log("Check Range Gun FAILURE");
                 return CompletionStates.FAILURE;
             }
         }
     }
 }
 
-    //Condition CheckAttackCooldown
+    //CheckAttackCooldown
 //Checks if the guard can attack or not
 public class CheckAttackCooldown : BaseLeaf
 {
@@ -395,29 +541,56 @@ public class CheckAttackCooldown : BaseLeaf
     {
         if (guard.attackCooldown <= 0)
         {
+            Debug.Log("CheckAttackCooldown SUCCESS");
             return CompletionStates.SUCCESS;
         }
         else
         {
+            guard.attackCooldown--;
+            Debug.Log("CheckAttackCooldown FAILURE");
             return CompletionStates.FAILURE;
         }
     }
 }
-
-    //CheckAlertnessCounter
+ 
+    //CheckFollowing
 //Checks if the guard should still be hunting for the player
-public class CheckAlertnessCounter : BaseLeaf
+public class CheckFollowing : BaseLeaf
 {
     public override CompletionStates UpdateGuard(GuardController guard)
     {
-        if (guard.blackboard.alertnessCounter <= 0)
+        if (guard.followingPlayer <= 0)
+        {
+            Debug.Log("CheckFollowing FAILURE");
             return CompletionStates.FAILURE;
+        }
         else
+        {
+            Debug.Log("CheckFollowing SUCCESS");
             return CompletionStates.SUCCESS;
+        }
     }
 }
 
+    //DisableCurious
+//Enables the Guard's curious bool
+public class CheckCurious : BaseLeaf
+{
+    public override CompletionStates UpdateGuard(GuardController guard)
+    {
+        if (guard.curious)
+        {
+            Debug.Log("CheckCurious SUCCESS");
+            return CompletionStates.SUCCESS;
+        }
+        else
+        {
+            Debug.Log("CheckCurious FAILURE");
+            return CompletionStates.FAILURE;
+        }
 
+    }
+}
 
 
 

@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Blackboard : MonoBehaviour {
 
-    public Transform playerLastSeen;
-    public GameObject playerPos;
-    public int alertnessCounter;
-
+    public Vector3 playerLastSeen;
+    public GameObject player;
 	// Use this for initialization
 	void Start () {
 		
